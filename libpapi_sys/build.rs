@@ -5,19 +5,33 @@ use std::process::Command;
 use std::path::PathBuf;
 
 fn main() -> std::io::Result<()> {
-    let mut current_dir = std::env::current_dir()?;
-    current_dir.push("libpapi");
-    current_dir.push("src");
+    let out_dir:String = std::env::var("OUT_DIR").unwrap();
+    let target_pipe_source_dir:PathBuf = PathBuf::from(format!("{}/libpapi", out_dir));
+
+    let mut papi_source_dir = std::env::current_dir()?;
+    papi_source_dir.push("libpapi");
+    papi_source_dir.push("src");
+
+    let mut mkdir = Command::new("mkdir")
+        .args(&["-p", &format!("{}", target_pipe_source_dir.display())])
+        .spawn()?;
+    mkdir.wait()?;
+
+    let mut copy = Command::new("cp")
+        .args(&["-r", &format!("{}", papi_source_dir.display()), &format!("{}", target_pipe_source_dir.display())])
+        .spawn()?;
+    let target_pipe_source_dir:PathBuf = PathBuf::from(format!("{}/libpapi/src", out_dir));
+    copy.wait()?;
 
     let mut configure = Command::new("./configure")
-        .current_dir(&current_dir)
+        .current_dir(&target_pipe_source_dir)
         .spawn()?;
     configure.wait()?;
 
     let cpu_num = num_cpus::get();
     let mut make = Command::new("make")
         .args(&[format!("-j{}", cpu_num)])
-        .current_dir(&current_dir)
+        .current_dir(&target_pipe_source_dir)
         .spawn()?;
     make.wait()?;
 
@@ -26,12 +40,12 @@ fn main() -> std::io::Result<()> {
         .generate()
         .expect("Unable to generate bindings");
 
-    let out_path = PathBuf::from(std::env::var("OUT_DIR").unwrap());
+    let out_path = PathBuf::from(out_dir);
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
 
     println!("cargo:rustc-link-lib=static=papi");
-    println!("cargo:rustc-link-search=native={}", current_dir.into_boxed_path().display());
+    println!("cargo:rustc-link-search=native={}", target_pipe_source_dir.display());
     Ok(())
 }
