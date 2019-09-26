@@ -6,6 +6,7 @@ edition = "2018"
 build = "build.rs"
 links = "papi"
 license = "Apache-2.0"
+description = "a simple rust binding for libpapi"
 
 [dependencies]
 
