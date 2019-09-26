@@ -5,6 +5,7 @@ authors = ["Yang Keao <keao.yang@yahoo.com>"]
 edition = "2018"
 build = "build.rs"
 links = "papi"
+license = "Apache-2.0"
 
 [dependencies]
 
