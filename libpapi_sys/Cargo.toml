@@ -1,0 +1,13 @@
+[package]
+name = "libpapi_sys"
+version = "0.1.0"
+authors = ["Yang Keao <keao.yang@yahoo.com>"]
+edition = "2018"
+build = "build.rs"
+links = "papi"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.51"
+num_cpus = "1.10.1"

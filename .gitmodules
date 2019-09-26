@@ -1,0 +1,3 @@
+[submodule "libpapi_sys/libpapi"]
+	path = libpapi_sys/libpapi
+	url = https://bitbucket.org/icl/papi.git
