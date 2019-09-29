@@ -29,8 +29,10 @@ fn main() -> std::io::Result<()> {
     configure.wait()?;
 
     let cpu_num = num_cpus::get();
+    let original_cflags = std::env::var("CFLAGS").unwrap_or_default();
     let mut make = Command::new("make")
         .args(&[format!("-j{}", cpu_num)])
+        .env("CFLAGS", format!("{} -fPIC", original_cflags))
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     make.wait()?;
