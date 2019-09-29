@@ -1,5 +1,7 @@
 #![feature(optin_builtin_traits)]
 
+use std::sync::{Mutex, MutexGuard};
+
 mod event_set;
 mod error;
 mod event;
@@ -10,7 +12,9 @@ pub use event::*;
 
 use libpapi_sys::*;
 
-pub struct Papi {}
+pub struct Papi {
+    single_counter_lock: Mutex<()>
+}
 
 impl Papi {
     pub fn new() -> Result<Papi, PapiError> {
@@ -18,46 +22,39 @@ impl Papi {
         if retval != PAPI_VER_CURRENT {
             return Err(PapiError::from(retval))
         } else {
-            Ok(Papi {})
+            Ok(Papi {
+                single_counter_lock: Mutex::new(())
+            })
         }
     }
 
     pub fn start_count(&self, event_set: EventSet) -> Result<PapiCounter, PapiError> {
+        let guard = match self.single_counter_lock.try_lock() {
+            Ok(guard) => guard,
+            Err(_) => panic!("Multiple counter is not supported now!")
+        };
+
         let retval = unsafe {PAPI_start(event_set.raw_event_set())};
         if retval != PAPI_OK as i32 {
             Err(PapiError::from(retval))
         } else {
             Ok(PapiCounter {
-                event_set
+                event_set,
+                _guard: guard,
             })
         }
     }
 }
 
-pub struct PapiCounter {
-    event_set: EventSet
+pub struct PapiCounter<'a> {
+    event_set: EventSet,
+    _guard: MutexGuard<'a, ()>
 }
 
-impl !Sync for PapiCounter {}
-impl !Send for PapiCounter {}
+impl !Sync for PapiCounter<'_> {}
+impl !Send for PapiCounter<'_> {}
 
-impl PapiCounter {
-    pub fn stop(&mut self, events: &[Event]) -> Result<Vec<i64>, PapiError> {
-        let mut drain_event_set = EventSet::new()?;
-        for event in events {
-            self.event_set.remove(event.clone())?;
-            drain_event_set.insert(event.clone())?;
-        }
-
-        let mut values = Vec::with_capacity(drain_event_set.size());
-        let retval = unsafe {PAPI_stop(drain_event_set.raw_event_set(), values.as_mut_ptr())};
-        if retval != PAPI_OK as i32 {
-            Err(PapiError::from(retval))
-        } else {
-            Ok(values)
-        }
-    }
-
+impl PapiCounter<'_> {
     pub fn read_events(&self, events: &EventSet) -> Result<Vec<i64>, PapiError> {
         let mut values = Vec::with_capacity(events.size());
 
@@ -74,7 +71,7 @@ impl PapiCounter {
     }
 }
 
-impl Drop for PapiCounter {
+impl Drop for PapiCounter<'_> {
     fn drop(&mut self) {
         let mut values = Vec::with_capacity(self.event_set.size());
 

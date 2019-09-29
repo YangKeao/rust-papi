@@ -7,7 +7,6 @@ use super::Event;
 
 pub struct EventSet {
     raw_event_set: c_int,
-    size: usize,
 }
 
 impl EventSet {
@@ -21,15 +20,12 @@ impl EventSet {
         } else {
             Ok(EventSet {
                 raw_event_set: event_set,
-                size: 0,
             })
         }
     }
 
     #[inline]
     pub fn insert(&mut self, event: Event) -> Result<(), PapiError> {
-        self.size += 1;
-
         let retval = unsafe {
             PAPI_add_event(self.raw_event_set, event.get_code())
         };
@@ -42,8 +38,6 @@ impl EventSet {
 
     #[inline]
     pub fn remove(&mut self, event: Event) -> Result<(), PapiError> {
-        self.size -= 1; // TODO: check whether size becomes 0 or less
-
         let retval = unsafe {
             PAPI_remove_event(self.raw_event_set, event.get_code())
         };
@@ -56,8 +50,6 @@ impl EventSet {
 
     #[inline]
     pub fn empty(&mut self) -> Result<(), PapiError> {
-        self.size = 0;
-
         let retval = unsafe {
             PAPI_cleanup_eventset(self.raw_event_set)
         };
@@ -75,7 +67,9 @@ impl EventSet {
 
     #[inline]
     pub fn size(&self) -> usize {
-        self.size
+        unsafe {
+            PAPI_num_events(self.raw_event_set) as usize
+        }
     }
 }
 
