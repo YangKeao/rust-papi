@@ -44,6 +44,23 @@ impl Papi {
             })
         }
     }
+
+    pub fn attach(&self, event_set: EventSet, tid: u64) -> Result<AttachHandler, PapiError> {
+        let retval = unsafe {
+            let mut option_t = PAPI_option_t {
+                attach: PAPI_attach_option_t {
+                    eventset: event_set.raw_event_set(),
+                    tid,
+                }
+            };
+            PAPI_set_opt(PAPI_ATTACH as i32, &mut option_t)
+        };
+        if retval != PAPI_OK as i32 {
+            Err(PapiError::from(retval))
+        } else {
+            Ok(AttachHandler::new(event_set))
+        }
+    }
 }
 
 pub struct PapiCounter<'a> {
@@ -79,6 +96,35 @@ impl Drop for PapiCounter<'_> {
 
         if retval != PAPI_OK as i32 {
             panic!("Error while dropping events.Errno: {}", retval)
+        }
+    }
+}
+
+pub struct AttachHandler {
+    event_set: EventSet
+}
+
+impl AttachHandler {
+    fn new(event_set: EventSet) -> AttachHandler {
+        AttachHandler {
+            event_set,
+        }
+    }
+}
+
+impl Drop for AttachHandler {
+    fn drop(&mut self) {
+        let retval = unsafe {
+            let mut option_t = PAPI_option_t {
+                attach: PAPI_attach_option_t {
+                    eventset: self.event_set.raw_event_set(),
+                    tid: 0,
+                }
+            };
+            PAPI_set_opt(PAPI_DETACH as i32, &mut option_t)
+        };
+        if retval != PAPI_OK as i32 {
+            panic!("Detach failed. Errno: {}", retval)
         }
     }
 }
