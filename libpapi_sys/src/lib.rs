@@ -13,7 +13,7 @@ mod tests {
     #[test]
     fn it_works() {
         unsafe {
-            let mut EventSet = PAPI_NULL;
+            let mut event_set = PAPI_NULL;
             let mut values = [0i64];
 
             let retval = PAPI_library_init(PAPI_VER_CURRENT);
@@ -27,17 +27,17 @@ mod tests {
                 panic!("PAPI_event_name_to_code failed {}", retval)
             }
 
-            let retval = PAPI_create_eventset(&mut EventSet);
+            let retval = PAPI_create_eventset(&mut event_set);
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_create_eventset error {}", retval)
             }
 
-            let retval = PAPI_add_event(EventSet.clone(), PAPI_TOT_INS as i32);
+            let retval = PAPI_add_event(event_set.clone(), PAPI_TOT_INS as i32);
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_add_event failed {}", retval)
             }
 
-            let retval = PAPI_start(EventSet.clone());
+            let retval = PAPI_start(event_set.clone());
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_start failed {}", retval)
             }
@@ -47,12 +47,12 @@ mod tests {
                 sum *= i;
             }
 
-            let retval = PAPI_read(EventSet.clone(), values.as_mut_ptr());
+            let retval = PAPI_read(event_set.clone(), values.as_mut_ptr());
             if retval != PAPI_OK as i32{
                 panic!("PAPI_read failed")
             }
 
-            let retval = PAPI_stop(EventSet, values.as_mut_ptr());
+            let retval = PAPI_stop(event_set, values.as_mut_ptr());
             if retval != PAPI_OK as i32{
                 panic!("PAPI_stop failed")
             }
