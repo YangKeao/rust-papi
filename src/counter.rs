@@ -29,6 +29,21 @@ impl PapiCounter<'_, '_> {
     pub fn read(&self) -> Result<Vec<i64>, PapiError> {
         self.read_events(&self.event_set)
     }
+
+    pub fn read_and_reset_events(&self, events: &EventSet) -> Result<Vec<i64>, PapiError> {
+        let mut values = vec![0; events.size()];
+
+        let retval = unsafe {PAPI_accum(events.raw_event_set(), values.as_mut_ptr())};
+        if retval != PAPI_OK as i32 {
+            Err(PapiError::from(retval))
+        } else {
+            Ok(values)
+        }
+    }
+
+    pub fn read_and_reset(&self) -> Result<Vec<i64>, PapiError> {
+        self.read_and_reset_events(&self.event_set)
+    }
 }
 
 impl Drop for PapiCounter<'_, '_> {

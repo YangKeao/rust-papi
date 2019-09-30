@@ -13,12 +13,6 @@ fn main() {
     let matches = App::new("Counter Monitor")
         .version("0.1")
         .author("Yang Keao <keao.yang@yahoo.com>")
-        .arg(Arg::with_name("events")
-            .short("e")
-            .long("events")
-            .value_name("events")
-            .required(true)
-            .takes_value(true))
         .arg(Arg::with_name("tid")
             .short("t")
             .long("tid")
@@ -33,7 +27,6 @@ fn main() {
             .takes_value(true))
         .get_matches();
 
-    let events = matches.value_of("events").unwrap();
     let tid = value_t!(matches, "tid", u64).unwrap();
     let interval = value_t!(matches, "interval", u64).unwrap_or(1000);
     let interval = std::time::Duration::from_millis(interval);
@@ -48,10 +41,12 @@ fn main() {
     nix::sys::wait::waitpid(pid.clone(), Some(nix::sys::wait::WaitPidFlag::WSTOPPED)).unwrap();
 
     let handler = instance.attach(&event_set, tid).unwrap();
-    for event in events.split(',') {
-        let event = Event::try_from(event).unwrap();
-        event_set.insert(event).unwrap();
-    }
+
+    let event = Event::try_from("PAPI_TOT_INS").unwrap();
+    event_set.insert(event).unwrap();
+    let event = Event::try_from("PAPI_TOT_CYC").unwrap();
+    event_set.insert(event).unwrap();
+
     let counter = handler.start_count().unwrap();
 
     ptrace::cont(pid, None).unwrap();
@@ -65,8 +60,8 @@ fn main() {
         let status = nix::sys::wait::waitpid(pid.clone(), Some(nix::sys::wait::WaitPidFlag::WSTOPPED)).unwrap();
         dbg!(status);
 
-        let count = counter.read().unwrap();
-        println!("TRUE: {:?}", count);
+        let count = counter.read_and_reset().unwrap();
+        println!("{:?}", (count[0] as f64 ) /( count[1] as f64));
 
         ptrace::cont(pid, None).unwrap();
     }
