@@ -25,9 +25,21 @@ impl EventSet {
     }
 
     #[inline]
-    pub fn insert(&mut self, event: Event) -> Result<(), PapiError> {
+    pub fn insert(&self, event: Event) -> Result<(), PapiError> {
         let retval = unsafe {
             PAPI_add_event(self.raw_event_set, event.get_code())
+        };
+        if retval != PAPI_OK as i32 {
+            Err(PapiError::from(retval))
+        } else {
+            Ok(())
+        }
+    }
+
+    #[inline]
+    pub fn assign_component(&self, component: i32) -> Result<(), PapiError> {
+        let retval = unsafe {
+            PAPI_assign_eventset_component(self.raw_event_set, component)
         };
         if retval != PAPI_OK as i32 {
             Err(PapiError::from(retval))

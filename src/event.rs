@@ -11,7 +11,7 @@ pub struct Event(c_int);
 
 impl Event {
     #[inline]
-    pub fn get_code(&self) -> c_int {
+    pub fn get_code(self) -> c_int {
         self.0
     }
 }
@@ -28,9 +28,9 @@ impl TryFrom<&str> for Event {
             PAPI_event_name_to_code(event_name.into_raw(), &mut event)
         };
         if retval != PAPI_OK as i32 {
-            return Err(PapiError::from(retval))
+            Err(PapiError::from(retval))
         } else {
-            return Ok(Event(event))
+            Ok(Event(event))
         }
     }
 }
