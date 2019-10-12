@@ -2,7 +2,7 @@
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+include!(env!("BINDING_PATH"));
 
 pub const PAPI_VER_CURRENT: std::os::raw::c_int = 84344832;
 
