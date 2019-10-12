@@ -37,15 +37,20 @@ fn main() -> std::io::Result<()> {
         .spawn()?;
     make.wait()?;
 
-    let bindings = bindgen::Builder::default()
-        .header("./libpapi/src/papi.h")
-        .generate()
-        .expect("Unable to generate bindings");
-
-    let out_path = PathBuf::from(out_dir);
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+    match std::env::var("TARGET").unwrap_or("".to_owned()).as_str() {
+        "x86_64-unknown-linux-gnu" => {}
+        _ => {
+            let bindings = bindgen::Builder::default()
+                .header("./libpapi/src/papi.h")
+                .generate()
+                .expect("Unable to generate bindings");
+  
+            let out_path = PathBuf::from(out_dir);
+            bindings
+                .write_to_file(out_path.join("bindings.rs"))
+                .expect("Couldn't write bindings!");
+        }
+   }
 
     println!("cargo:rustc-link-lib=static=papi");
     println!("cargo:rustc-link-search=native={}", target_pipe_source_dir.display());
