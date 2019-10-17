@@ -27,19 +27,33 @@ fn main() -> std::io::Result<()> {
     let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/libpapi/src", out_dir));
     copy.wait()?;
 
+    println!("INFO: start ./configure");
     let mut configure = Command::new("./configure")
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
-    configure.wait()?;
+    match configure.wait() {
+        Ok(_) => {},
+        Err(_) => {
+            println!("WARNING: configure error")
+        },
+    };
+    println!("INFO: ./configure finished");
 
     let cpu_num = num_cpus::get();
     let original_cflags = std::env::var("CFLAGS").unwrap_or_default();
+    println!("INFO: start make");
     let mut make = Command::new("make")
-        .args(&[format!("-j{}", cpu_num)])
+        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned()])
         .env("CFLAGS", format!("{} -fPIC", original_cflags))
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
-    make.wait()?;
+    match make.wait() {
+        Ok(_) => {},
+        Err(_) => {
+            println!("WARNING: make error")
+        },
+    };
+    println!("INFO: make finished");
 
     let file_path = match std::env::var("TARGET").unwrap_or("".to_owned()).as_str() {
         "x86_64-unknown-linux-gnu" => PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap())
