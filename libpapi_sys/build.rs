@@ -5,6 +5,11 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() -> std::io::Result<()> {
+    let original_cflags = std::env::var("CFLAGS").unwrap_or_default();
+    let new_cflags = format!("{} -fPIC", original_cflags);
+    std::env::set_var("CFLAGS", new_cflags);
+
+
     let out_dir: String = std::env::var("OUT_DIR").unwrap();
     let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/libpapi", out_dir));
 
@@ -40,11 +45,10 @@ fn main() -> std::io::Result<()> {
     println!("INFO: ./configure finished");
 
     let cpu_num = num_cpus::get();
-    let original_cflags = std::env::var("CFLAGS").unwrap_or_default();
+
     println!("INFO: start make");
     let mut make = Command::new("make")
         .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned()])
-        .env("CFLAGS", format!("{} -fPIC", original_cflags))
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     match make.wait() {
