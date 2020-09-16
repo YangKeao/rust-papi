@@ -46,9 +46,21 @@ fn main() -> std::io::Result<()> {
 
     let cpu_num = num_cpus::get();
 
-    println!("INFO: start make");
+    println!("INFO: start make libpfm4/lib/libpfm.a");
     let mut make = Command::new("make")
-        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned()])
+        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned(), "libpfm4/lib/libpfm.a".to_owned()])
+        .current_dir(&target_pipe_source_dir)
+        .spawn()?;
+    match make.wait() {
+        Ok(_) => {},
+        Err(_) => {
+            println!("WARNING: make error")
+        },
+    };
+
+    println!("INFO: start make libpapi.a");
+    let mut make = Command::new("make")
+        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned(), "libpapi.a".to_owned()])
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     match make.wait() {

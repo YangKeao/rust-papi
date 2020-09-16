@@ -1,4 +1,5 @@
 #![feature(optin_builtin_traits)]
+#![feature(negative_impls)]
 
 use std::sync::Mutex;
 
