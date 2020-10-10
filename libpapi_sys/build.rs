@@ -9,7 +9,6 @@ fn main() -> std::io::Result<()> {
     let new_cflags = format!("{} -fPIC", original_cflags);
     std::env::set_var("CFLAGS", new_cflags);
 
-
     let out_dir: String = std::env::var("OUT_DIR").unwrap();
     let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/libpapi", out_dir));
 
@@ -37,10 +36,8 @@ fn main() -> std::io::Result<()> {
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     match configure.wait() {
-        Ok(_) => {},
-        Err(_) => {
-            println!("WARNING: configure error")
-        },
+        Ok(_) => {}
+        Err(_) => println!("WARNING: configure error"),
     };
     println!("INFO: ./configure finished");
 
@@ -48,30 +45,37 @@ fn main() -> std::io::Result<()> {
 
     println!("INFO: start make libpfm4/lib/libpfm.a");
     let mut make = Command::new("make")
-        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned(), "libpfm4/lib/libpfm.a".to_owned()])
+        .args(&[
+            format!("-j{}", cpu_num),
+            "--keep-going".to_owned(),
+            "libpfm4/lib/libpfm.a".to_owned(),
+        ])
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     match make.wait() {
-        Ok(_) => {},
-        Err(_) => {
-            println!("WARNING: make error")
-        },
+        Ok(_) => {}
+        Err(_) => println!("WARNING: make error"),
     };
 
     println!("INFO: start make libpapi.a");
     let mut make = Command::new("make")
-        .args(&[format!("-j{}", cpu_num), "--keep-going".to_owned(), "libpapi.a".to_owned()])
+        .args(&[
+            format!("-j{}", cpu_num),
+            "--keep-going".to_owned(),
+            "libpapi.a".to_owned(),
+        ])
         .current_dir(&target_pipe_source_dir)
         .spawn()?;
     match make.wait() {
-        Ok(_) => {},
-        Err(_) => {
-            println!("WARNING: make error")
-        },
+        Ok(_) => {}
+        Err(_) => println!("WARNING: make error"),
     };
     println!("INFO: make finished");
 
-    let file_path = match std::env::var("TARGET").unwrap_or("".to_owned()).as_str() {
+    let file_path = match std::env::var("TARGET")
+        .unwrap_or_else(|_| "".to_owned())
+        .as_str()
+    {
         "x86_64-unknown-linux-gnu" => PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap())
             .join("bindings")
             .join("bindings.rs"),

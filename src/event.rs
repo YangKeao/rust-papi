@@ -1,10 +1,10 @@
 use std::convert::TryFrom;
+use std::ffi::CString;
 use std::os::raw::c_int;
 
-use super::PapiError;
-use std::ffi::CString;
-
 use libpapi_sys::*;
+
+use super::PapiError;
 
 #[derive(Copy, Clone)]
 pub struct Event(c_int);
@@ -24,9 +24,7 @@ impl TryFrom<&str> for Event {
         let event_name = CString::new(event_name).expect("crate CString from event_name failed");
 
         let mut event: c_int = 0;
-        let retval = unsafe {
-            PAPI_event_name_to_code(event_name.into_raw(), &mut event)
-        };
+        let retval = unsafe { PAPI_event_name_to_code(event_name.into_raw(), &mut event) };
         if retval != PAPI_OK as i32 {
             Err(PapiError::from(retval))
         } else {
