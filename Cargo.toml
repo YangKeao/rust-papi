@@ -5,12 +5,10 @@ authors = ["Yang Keao <keao.yang@yahoo.com>"]
 edition = "2018"
 license = "Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-libpapi_sys = {version="0.1.7", path = "./libpapi_sys"}
+libpapi_sys = { version = "0.1.7", path = "./libpapi_sys" }
 
 [dev-dependencies]
 clap = "2.33"
-nix = "0.15.0"
+nix = "0.18.0"
 libc = "0.2"
