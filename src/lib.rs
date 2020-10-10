@@ -1,19 +1,19 @@
 #![feature(optin_builtin_traits)]
 #![feature(negative_impls)]
 
-use std::sync::Mutex;
-
 mod counter;
 mod error;
 mod event;
 mod event_set;
 mod handler;
 
-pub use counter::*;
-pub use error::*;
-pub use event::*;
-pub use event_set::*;
-pub use handler::*;
+pub use self::counter::*;
+pub use self::error::*;
+pub use self::event::*;
+pub use self::event_set::*;
+pub use self::handler::*;
+
+use std::sync::Mutex;
 
 use libpapi_sys::*;
 

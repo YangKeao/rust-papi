@@ -1,9 +1,9 @@
-use super::EventSet;
-use super::PapiError;
+use std::sync::MutexGuard;
 
 use libpapi_sys::*;
 
-use std::sync::MutexGuard;
+use super::EventSet;
+use super::PapiError;
 
 pub struct PapiCounter<'a, 'b> {
     pub event_set: &'a EventSet,

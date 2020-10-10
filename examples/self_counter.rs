@@ -1,5 +1,6 @@
-use papi::{Event, EventSet, Papi};
 use std::convert::TryFrom;
+
+use papi::{Event, EventSet, Papi};
 
 fn main() {
     let instance = Papi::new().unwrap();

@@ -1,10 +1,10 @@
 use std::convert::TryFrom;
+use std::ffi::CString;
 use std::os::raw::c_int;
 
-use super::PapiError;
-use std::ffi::CString;
-
 use libpapi_sys::*;
+
+use super::PapiError;
 
 #[derive(Copy, Clone)]
 pub struct Event(c_int);

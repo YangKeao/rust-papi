@@ -72,7 +72,10 @@ fn main() -> std::io::Result<()> {
     };
     println!("INFO: make finished");
 
-    let file_path = match std::env::var("TARGET").unwrap_or("".to_owned()).as_str() {
+    let file_path = match std::env::var("TARGET")
+        .unwrap_or_else(|_| "".to_owned())
+        .as_str()
+    {
         "x86_64-unknown-linux-gnu" => PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap())
             .join("bindings")
             .join("bindings.rs"),

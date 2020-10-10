@@ -1,7 +1,8 @@
-use super::{EventSet, Papi, PapiCounter, PapiError};
+use std::sync::TryLockError;
 
 use libpapi_sys::*;
-use std::sync::TryLockError;
+
+use super::{EventSet, Papi, PapiCounter, PapiError};
 
 pub struct PapiHandler<'a, 'b> {
     event_set: &'a EventSet,
