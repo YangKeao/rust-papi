@@ -1,36 +1,42 @@
 #[macro_use]
 extern crate clap;
 
-use papi::{Papi, EventSet, Event};
 use clap::{App, Arg};
+use papi::{Event, EventSet, Papi};
 use std::convert::TryFrom;
 
-use nix::unistd::Pid;
-use nix::sys::ptrace;
 use libc::pid_t;
+use nix::sys::ptrace;
+use nix::unistd::Pid;
 
 fn main() {
     let matches = App::new("Counter Monitor")
         .version("0.1")
         .author("Yang Keao <keao.yang@yahoo.com>")
-        .arg(Arg::with_name("events")
-            .short("e")
-            .long("events")
-            .value_name("events")
-            .required(true)
-            .takes_value(true))
-        .arg(Arg::with_name("tid")
-            .short("t")
-            .long("tid")
-            .value_name("tid")
-            .required(true)
-            .takes_value(true))
-        .arg(Arg::with_name("interval")
-            .short("i")
-            .long("interval")
-            .value_name("interval")
-            .required(false)
-            .takes_value(true))
+        .arg(
+            Arg::with_name("events")
+                .short("e")
+                .long("events")
+                .value_name("events")
+                .required(true)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("tid")
+                .short("t")
+                .long("tid")
+                .value_name("tid")
+                .required(true)
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("interval")
+                .short("i")
+                .long("interval")
+                .value_name("interval")
+                .required(false)
+                .takes_value(true),
+        )
         .get_matches();
 
     let events = matches.value_of("events").unwrap();
@@ -55,14 +61,14 @@ fn main() {
     let counter = handler.start_count().unwrap();
 
     ptrace::cont(pid, None).unwrap();
-    std::thread::spawn(move || {
-        loop {
-            nix::sys::signal::kill(pid.clone(), nix::sys::signal::SIGSTOP).unwrap();
-            std::thread::sleep(interval);
-        }
+    std::thread::spawn(move || loop {
+        nix::sys::signal::kill(pid.clone(), nix::sys::signal::SIGSTOP).unwrap();
+        std::thread::sleep(interval);
     });
     loop {
-        let status = nix::sys::wait::waitpid(pid.clone(), Some(nix::sys::wait::WaitPidFlag::WSTOPPED)).unwrap();
+        let status =
+            nix::sys::wait::waitpid(pid.clone(), Some(nix::sys::wait::WaitPidFlag::WSTOPPED))
+                .unwrap();
         dbg!(status);
 
         let count = counter.read().unwrap();

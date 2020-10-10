@@ -3,32 +3,32 @@
 
 use std::sync::Mutex;
 
-mod event_set;
+mod counter;
 mod error;
 mod event;
+mod event_set;
 mod handler;
-mod counter;
 
-pub use error::*;
-pub use event_set::*;
-pub use event::*;
 pub use counter::*;
+pub use error::*;
+pub use event::*;
+pub use event_set::*;
 pub use handler::*;
 
 use libpapi_sys::*;
 
 pub struct Papi {
-    single_counter_lock: Mutex<()>
+    single_counter_lock: Mutex<()>,
 }
 
 impl Papi {
     pub fn new() -> Result<Papi, PapiError> {
-        let retval = unsafe {PAPI_library_init(PAPI_VER_CURRENT)};
+        let retval = unsafe { PAPI_library_init(PAPI_VER_CURRENT) };
         if retval != PAPI_VER_CURRENT {
             Err(PapiError::from(retval))
         } else {
             Ok(Papi {
-                single_counter_lock: Mutex::new(())
+                single_counter_lock: Mutex::new(()),
             })
         }
     }
@@ -37,13 +37,17 @@ impl Papi {
         PapiHandler::new(event_set, self)
     }
 
-    pub fn attach<'a, 'b>(&'b self, event_set: &'a EventSet, tid: u64) -> Result<PapiHandler<'a, 'b>, PapiError> {
+    pub fn attach<'a, 'b>(
+        &'b self,
+        event_set: &'a EventSet,
+        tid: u64,
+    ) -> Result<PapiHandler<'a, 'b>, PapiError> {
         let retval = unsafe {
             let mut option_t = PAPI_option_t {
                 attach: PAPI_attach_option_t {
                     eventset: event_set.raw_event_set(),
                     tid,
-                }
+                },
             };
             PAPI_set_opt(PAPI_ATTACH as i32, &mut option_t)
         };

@@ -1,4 +1,4 @@
-use papi::{Papi, EventSet, Event};
+use papi::{Event, EventSet, Papi};
 use std::convert::TryFrom;
 
 fn main() {

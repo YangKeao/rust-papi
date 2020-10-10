@@ -22,7 +22,10 @@ mod tests {
             }
 
             let mut PAPI_TOT_INS: std::os::raw::c_int = 0;
-            let retval = PAPI_event_name_to_code(std::ffi::CStr::from_bytes_with_nul_unchecked(b"PAPI_TOT_INS\0").as_ptr(), &mut PAPI_TOT_INS);
+            let retval = PAPI_event_name_to_code(
+                std::ffi::CStr::from_bytes_with_nul_unchecked(b"PAPI_TOT_INS\0").as_ptr(),
+                &mut PAPI_TOT_INS,
+            );
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_event_name_to_code failed {}", retval)
             }
@@ -48,12 +51,12 @@ mod tests {
             }
 
             let retval = PAPI_read(event_set.clone(), values.as_mut_ptr());
-            if retval != PAPI_OK as i32{
+            if retval != PAPI_OK as i32 {
                 panic!("PAPI_read failed")
             }
 
             let retval = PAPI_stop(event_set, values.as_mut_ptr());
-            if retval != PAPI_OK as i32{
+            if retval != PAPI_OK as i32 {
                 panic!("PAPI_stop failed")
             }
 
