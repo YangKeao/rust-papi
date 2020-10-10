@@ -2,9 +2,9 @@ use std::convert::TryFrom;
 
 use clap::{value_t, App, Arg};
 use libc::pid_t;
+use libpapi::{Event, EventSet, Papi};
 use nix::sys::ptrace;
 use nix::unistd::Pid;
-use papi::{Event, EventSet, Papi};
 
 fn main() {
     let matches = App::new("Counter Monitor")

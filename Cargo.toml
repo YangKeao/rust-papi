@@ -1,14 +1,5 @@
-[package]
-name = "papi"
-version = "0.1.2"
-authors = ["Yang Keao <keao.yang@yahoo.com>"]
-edition = "2018"
-license = "Apache-2.0"
-
-[dependencies]
-libpapi_sys = { version = "0.1.7", path = "./libpapi_sys" }
-
-[dev-dependencies]
-clap = "2.33"
-nix = "0.18.0"
-libc = "0.2"
+[workspace]
+members = [
+    "libpapi",
+    "libpapi_sys",
+]

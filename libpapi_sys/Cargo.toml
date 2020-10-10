@@ -8,8 +8,6 @@ links = "papi"
 license = "Apache-2.0"
 description = "a simple rust binding for libpapi"
 
-[dependencies]
-
 [build-dependencies]
-bindgen = "0.53"
+bindgen = { version = "0.55", default-features = false, features = ["runtime", "which-rustfmt"] }
 num_cpus = "1.8"

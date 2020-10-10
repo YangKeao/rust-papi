@@ -1,6 +1,3 @@
-extern crate bindgen;
-extern crate num_cpus;
-
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -10,10 +7,10 @@ fn main() -> std::io::Result<()> {
     std::env::set_var("CFLAGS", new_cflags);
 
     let out_dir: String = std::env::var("OUT_DIR").unwrap();
-    let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/libpapi", out_dir));
+    let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/papi", out_dir));
 
     let mut papi_source_dir = std::env::current_dir()?;
-    papi_source_dir.push("libpapi");
+    papi_source_dir.push("papi");
     papi_source_dir.push("src");
 
     let mut mkdir = Command::new("mkdir")
@@ -28,7 +25,7 @@ fn main() -> std::io::Result<()> {
             &format!("{}", target_pipe_source_dir.display()),
         ])
         .spawn()?;
-    let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/libpapi/src", out_dir));
+    let target_pipe_source_dir: PathBuf = PathBuf::from(format!("{}/papi/src", out_dir));
     copy.wait()?;
 
     println!("INFO: start ./configure");
@@ -81,7 +78,7 @@ fn main() -> std::io::Result<()> {
             .join("bindings.rs"),
         _ => {
             let bindings = bindgen::Builder::default()
-                .header("./libpapi/src/papi.h")
+                .header("./papi/src/papi.h")
                 .generate()
                 .expect("Unable to generate bindings");
             let out_path = PathBuf::from(out_dir).join("bindings.rs");
