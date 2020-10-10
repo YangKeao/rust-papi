@@ -10,5 +10,5 @@ libpapi_sys = { version = "0.1.7", path = "./libpapi_sys" }
 
 [dev-dependencies]
 clap = "2.33"
-nix = "0.15.0"
+nix = "0.18.0"
 libc = "0.2"
