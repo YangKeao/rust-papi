@@ -1,3 +1,4 @@
-[submodule "libpapi_sys/libpapi"]
-	path = libpapi_sys/libpapi
+[submodule "libpapi_sys/papi"]
+    path = libpapi_sys/papi
     url = https://bitbucket.org/icl/papi.git
+    branch = stable-6.0

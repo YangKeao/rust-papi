@@ -7,6 +7,7 @@ include!(env!("BINDING_PATH"));
 
 pub const PAPI_VER_CURRENT: std::os::raw::c_int = 100663296;
 
+#[cfg(not(feature = "ci"))]
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -36,22 +37,22 @@ mod tests {
                 panic!("PAPI_create_eventset error {}", retval)
             }
 
-            let retval = PAPI_add_event(event_set.clone(), PAPI_TOT_INS as i32);
+            let retval = PAPI_add_event(event_set, PAPI_TOT_INS as i32);
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_add_event failed {}", retval)
             }
 
-            let retval = PAPI_start(event_set.clone());
+            let retval = PAPI_start(event_set);
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_start failed {}", retval)
             }
 
-            let mut sum = 0;
+            let mut _sum = 0;
             for i in 0..1000000 {
-                sum *= i;
+                _sum *= i;
             }
 
-            let retval = PAPI_read(event_set.clone(), values.as_mut_ptr());
+            let retval = PAPI_read(event_set, values.as_mut_ptr());
             if retval != PAPI_OK as i32 {
                 panic!("PAPI_read failed")
             }

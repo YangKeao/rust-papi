@@ -38,10 +38,17 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all --all-targets -- -D warnings
+          args: --workspace --all-targets -- -D warnings
 
-      - name: Run cargo test
+      - name: Test libpapi_sys
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --all
+          args: --manifest-path libpapi_sys/Cargo.toml --features ci
+
+      - name: Test libpapi
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --manifest-path libpapi/Cargo.toml
+
