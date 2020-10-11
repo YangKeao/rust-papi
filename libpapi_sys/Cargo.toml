@@ -11,3 +11,7 @@ description = "a simple rust binding for libpapi"
 [build-dependencies]
 bindgen = { version = "0.55", default-features = false, features = ["runtime", "which-rustfmt"] }
 num_cpus = "1.8"
+
+[features]
+# only use for tests of CI
+ci = []

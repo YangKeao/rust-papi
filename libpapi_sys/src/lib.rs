@@ -7,6 +7,7 @@ include!(env!("BINDING_PATH"));
 
 pub const PAPI_VER_CURRENT: std::os::raw::c_int = 100663296;
 
+#[cfg(not(feature = "ci"))]
 #[cfg(test)]
 mod tests {
     use super::*;
