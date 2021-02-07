@@ -1,6 +1,6 @@
 [package]
 name = "papi"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Yang Keao <keao.yang@yahoo.com>"]
 edition = "2018"
 license = "Apache-2.0"
