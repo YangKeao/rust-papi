@@ -6,7 +6,7 @@ edition = "2018"
 license = "Apache-2.0"
 
 [dependencies]
-libpapi_sys = { version = "0.1.7", path = "./libpapi_sys" }
+libpapi_sys = { version = "0.2.0", path = "./libpapi_sys" }
 
 [dev-dependencies]
 clap = "2.33"
