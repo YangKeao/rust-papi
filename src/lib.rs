@@ -1,4 +1,3 @@
-#![feature(optin_builtin_traits)]
 #![feature(negative_impls)]
 
 mod counter;
@@ -56,13 +55,5 @@ impl Papi {
         } else {
             Ok(PapiHandler::new(event_set, self))
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
     }
 }
