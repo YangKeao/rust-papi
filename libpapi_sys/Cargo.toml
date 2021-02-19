@@ -1,6 +1,6 @@
 [package]
 name = "libpapi_sys"
-version = "0.1.7"
+version = "0.2.0"
 authors = ["Yang Keao <keao.yang@yahoo.com>"]
 edition = "2018"
 build = "build.rs"
@@ -11,5 +11,5 @@ description = "a simple rust binding for libpapi"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.53"
+bindgen = "0.57"
 num_cpus = "1.8"
